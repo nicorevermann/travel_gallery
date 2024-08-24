@@ -1,0 +1,4 @@
+img_path = "img/"
+template_links = "templates/template_links.html"
+template_trip = "templates/template_trip.html"
+output_path = "output/"
