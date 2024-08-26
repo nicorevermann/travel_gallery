@@ -34,7 +34,7 @@ class GalleryGenerator:
             if not year_destination in output: output[year_destination] = []
             if year_destination == title: 
                 meta = get_conf(f"{self.base_path}{title}/meta.toml", ["title"])
-                output[year_destination].append(self.heading(year_destination.replace("/", "_"), meta["title"]))
+                output[year_destination].append(self.heading(year_destination.replace("/", "_"), meta["title"], 2))
                 if title in self.gpx_data: output[year_destination].insert(0, self.map())
                 if title in self.images: output[year_destination].append(self.gallery(year_destination.replace("/", "_") ,title))
                 output[year_destination].append('</div>\n</div>\n<br><hr>\n\n')
@@ -43,8 +43,8 @@ class GalleryGenerator:
         for trip,content in sorted(output.items(), reverse=True):
             self.out(f"{trip.replace("/", "_")}.html", "".join(content)) 
 
-    def heading(self, html_class: str, title: str) -> str:
-        return f'<div id="{html_class}">\n<h2>{title}</h2>\n<div>\n'
+    def heading(self, html_class: str, title: str, size: int) -> str:
+        return f'<div id="{html_class}">\n<h{str(size)}>{title}</h{str(size)}>\n<div>\n'
 
     def gallery(self, html_class, key: str) -> str:
         output = ['<div class="images">']
@@ -52,7 +52,7 @@ class GalleryGenerator:
             img_path = self.base_path + key + "/" + image
             img_title = image.split("_")[1].split(".")[0] if image.split("_")[1] else ""
             output.append(f'<a href="{img_path}" data-lightbox="{html_class}" data-title="{img_title}" data-alt="{img_title}"><img src="{img_path}" loading="lazy"></a>\n')
-        return "".join(output) + "</div>"
+        return "".join(output) + "</div>\n</div>\n</div>\n"
 
     def map(self):
         pass
@@ -60,7 +60,7 @@ class GalleryGenerator:
     def chapter(self, html_class: str, key: str) -> str:
         output = ["<div>"]
         meta = get_conf(f"{self.base_path}{key}/meta.toml", ["title"])
-        if "title" in meta: output.append(self.heading("_".join(key.split("/")[:2]), meta["title"]))
+        if "title" in meta: output.append(self.heading("_".join(key.split("/")[:3]), meta["title"], 3))
         if key in self.images: output.append(self.gallery(html_class, key))
         return "".join(output) + "</div><br>"
 
