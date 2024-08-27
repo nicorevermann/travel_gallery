@@ -6,12 +6,12 @@ import hashlib
 from PIL import Image
 from concurrent.futures import ProcessPoolExecutor
 
-def get_conf(conf_file: str, keys: list) -> dict:
+def get_conf(conf_file: str, keys: list) -> dict[str, str]:
     with open(conf_file, "rb") as fh: conf = tomllib.load(fh)
     return {k: conf[k] if k in conf else "" for k in keys}
 
 class GalleryGenerator:
-    def __init__(self, base_path, file_tree, output_template, output_path):
+    def __init__(self, base_path: str, file_tree: dict, output_template: str, output_path: str):
         self.base_path = base_path
         self.output_template = output_template
         self.output_path = output_path
@@ -19,7 +19,7 @@ class GalleryGenerator:
         self.images = self.flatten_files(file_tree, (".jpg", ".jpeg", ".png"))
         self.gpx_data = self.flatten_files(file_tree, ".gpx")
 
-    def flatten_files(self, file_tree, file_type, current_path="") -> dict[str, list]:
+    def flatten_files(self, file_tree: dict, file_type, current_path: str = "") -> dict[str, list[str]]:
         files = {}
         for key, value in file_tree.items():
             if isinstance(value, dict):
@@ -49,7 +49,7 @@ class GalleryGenerator:
     def heading(self, html_class: str, title: str, size: int) -> str:
         return f'<div id="{html_class}">\n<h{str(size)}>{title}</h{str(size)}>\n<div>\n'
 
-    def gallery(self, html_class, key: str) -> str:
+    def gallery(self, html_class: str, key: str) -> str:
         output = ['<div class="images">\n']
         futures = []
         images_out_path = f"{self.output_path}out_img/"
@@ -101,11 +101,11 @@ class GalleryGenerator:
         if key in self.images: output.append(self.gallery(html_class, key))
         return "".join(output) + "</div></div></div><br>"
 
-    def out(self, output_name, output_html):
+    def out(self, output_name: str, output_html: str) -> None:
         with open(self.output_template, "r") as fh: page = fh.read()
         with open(self.output_path + output_name, "w") as fh: fh.write(page.replace("{content}", output_html))
 
-def generate_links(img_path, filetree, template, output_path):
+def generate_links(img_path: str, filetree: dict, template: str, output_path: str) -> None:
     links = ""
     for year in sorted(filetree, reverse=True):
         for destination in filetree[year]:
@@ -117,7 +117,7 @@ def generate_links(img_path, filetree, template, output_path):
     with open(template, "r") as fh: page = fh.read()
     with open(output_path + "index.html", "w") as fh: fh.write(page.replace("{links}", links))
 
-def generate_filetree(img_path):
+def generate_filetree(img_path: str) -> dict:
     tree = {}
     for entry in os.listdir(img_path):
         full_path = os.path.join(img_path, entry)
