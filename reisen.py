@@ -62,7 +62,7 @@ class GalleryGenerator:
                 thumbnail_path = self.base_path + key + "/" + image
 
                 future_img = executor.submit(self.shrink_and_compress_image, img_path, "webp", images_out_path, (2304, 2304))
-                future_thumb = executor.submit(self.shrink_and_compress_image, thumbnail_path, "webp", thumbnail_out_path, (256, 256))
+                future_thumb = executor.submit(self.shrink_and_compress_image, thumbnail_path, "webp", thumbnail_out_path, (384, 384))
                 futures.append((future_img, future_thumb, image))
 
             for future_img, future_thumb, image in futures:
